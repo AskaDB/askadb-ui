@@ -1,13 +1,22 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "name": "Vite Dev Server",
-        "type": "chrome",
-        "request": "launch",
-        "url": "http://localhost:5173",
-        "webRoot": "${workspaceFolder}/src"
-      }
-    ]
-  }
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "askadb-ui: Vite (npm run dev)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "askadb-ui: Chrome (http://localhost:5173)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/src"
+    }
+  ]
+}
   
