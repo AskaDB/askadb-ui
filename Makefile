@@ -12,6 +12,9 @@ build:
 preview:
 	$(PKG_MANAGER) run preview
 
+clean:
+	rm -rf node_modules dist
+
 docker-build:
 	docker build -t askadb/ui:local .
 
