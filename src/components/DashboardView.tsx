@@ -1,5 +1,6 @@
 import React from 'react';
 import ChartRenderer from './ChartRenderer';
+import DynamicTable from './DynamicTable';
 
 interface QueryResult {
   success: boolean;
@@ -75,43 +76,13 @@ const DashboardView: React.FC<DashboardViewProps> = ({ result, dashboard, questi
           <strong> Motivo:</strong> {dashboard.reasoning}
         </p>
         
-        {/* Renderizar o gráfico */}
-        <ChartRenderer config={dashboard.config} title={dashboard.title} />
+        {/* Renderizar o gráfico com dados para interpretação */}
+        <ChartRenderer config={dashboard.config} title={dashboard.title} data={result.data} />
       </div>
 
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">
-          📋 Dados da Consulta
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead>
-              <tr className="bg-gray-50">
-                {result.metadata.columns.map((column, index) => (
-                  <th key={index} className="px-4 py-2 text-left text-sm font-semibold text-gray-700 border-b">
-                    {column}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {result.data.slice(0, 10).map((row, rowIndex) => (
-                <tr key={rowIndex} className="hover:bg-gray-50">
-                  {result.metadata.columns.map((column, colIndex) => (
-                    <td key={colIndex} className="px-4 py-2 text-sm text-gray-600 border-b">
-                      {String(row[column] || '')}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {result.data.length > 10 && (
-            <p className="text-sm text-gray-500 mt-2">
-              Mostrando 10 de {result.data.length} registros
-            </p>
-          )}
-        </div>
+        {/* Usar o novo DynamicTable */}
+        <DynamicTable data={result.data} columns={result.metadata.columns} />
       </div>
 
       <div>
