@@ -6,6 +6,12 @@
       "**/dist": true,
       "**/node_modules": true
     },
-    "typescript.tsdk": "node_modules/typescript/lib"
-  }
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "debug.javascript.autoAttachFilter": "always",
+    "debug.javascript.terminalOptions": {
+      "skipFiles": ["<node_internals>/**"]
+    },
+    "debug.javascript.codelens.npmScripts": "all",
+    "debug.javascript.autoAttach": "always"
+}
   
