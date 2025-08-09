@@ -44,8 +44,13 @@ function App() {
   const [showHistory, setShowHistory] = useState<boolean>(false)
 
   const handleQuerySubmit = async (question: string) => {
+    console.log('Starting new query:', question);
     setIsLoading(true)
     setCurrentQuery(question)
+    
+    // Clear previous results before starting new query
+    setCurrentResult(null)
+    setCurrentDashboard(null)
 
     try {
       // Step 1: Convert NL to SQL
@@ -68,6 +73,7 @@ function App() {
 
       const nlResult = await nlResponse.json()
       const sql = nlResult.query
+      console.log('Generated SQL:', sql);
 
       // Step 2: Execute SQL query
       const queryResponse = await fetch('http://localhost:8002/execute', {
@@ -85,6 +91,7 @@ function App() {
       }
 
       const queryResult: QueryResult = await queryResponse.json()
+      console.log('Query result:', queryResult);
 
       if (!queryResult.success) {
         throw new Error(queryResult.error || 'Query execution failed')
@@ -108,6 +115,7 @@ function App() {
 
       const dashboardResult = await dashboardResponse.json()
       const dashboard = dashboardResult.suggestions[0] // Get the best suggestion
+      console.log('Dashboard suggestion:', dashboard);
 
       // Update state
       setCurrentResult(queryResult)
@@ -136,6 +144,7 @@ function App() {
           execution_time_ms: 0
         }
       })
+      setCurrentDashboard(null)
     } finally {
       setIsLoading(false)
     }

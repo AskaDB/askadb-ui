@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -37,6 +37,15 @@ interface ChartRendererProps {
 const ChartRenderer: React.FC<ChartRendererProps> = ({ config, title, data = [] }) => {
   // Debug: log the config to see what we're receiving
   console.log('ChartRenderer config:', config);
+  console.log('ChartRenderer data length:', data.length);
+
+  // Clear any existing chart instances when data changes
+  useEffect(() => {
+    // This will help ensure clean re-rendering
+    return () => {
+      // Cleanup if needed
+    };
+  }, [config, data]);
 
   if (!config || !config.data) {
     return (

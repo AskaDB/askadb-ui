@@ -29,12 +29,26 @@ interface DashboardViewProps {
 }
 
 const DashboardView: React.FC<DashboardViewProps> = ({ result, dashboard, question }) => {
+  console.log('DashboardView render:', { result, dashboard, question });
+
   if (!result.success || !result.data) {
     return (
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="text-red-600">
           <h3 className="font-semibold mb-2">Erro na consulta:</h3>
           <p>{result.error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Additional validation
+  if (!dashboard || !dashboard.config) {
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="text-red-600">
+          <h3 className="font-semibold mb-2">Erro no dashboard:</h3>
+          <p>Configuração de dashboard inválida</p>
         </div>
       </div>
     );
@@ -77,12 +91,21 @@ const DashboardView: React.FC<DashboardViewProps> = ({ result, dashboard, questi
         </p>
         
         {/* Renderizar o gráfico com dados para interpretação */}
-        <ChartRenderer config={dashboard.config} title={dashboard.title} data={result.data} />
+        <ChartRenderer 
+          key={`chart-${result.metadata.row_count}-${result.metadata.columns.length}`}
+          config={dashboard.config} 
+          title={dashboard.title} 
+          data={result.data} 
+        />
       </div>
 
       <div className="mb-6">
         {/* Usar o novo DynamicTable */}
-        <DynamicTable data={result.data} columns={result.metadata.columns} />
+        <DynamicTable 
+          key={`table-${result.metadata.row_count}-${result.metadata.columns.length}`}
+          data={result.data} 
+          columns={result.metadata.columns} 
+        />
       </div>
 
       <div>

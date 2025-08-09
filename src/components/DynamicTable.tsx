@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
 interface DynamicTableProps {
   data: any[];
@@ -16,6 +16,13 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data, columns, title = 'Dad
   const [itemsPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
   const [filters, setFilters] = useState<Record<string, string>>({});
+
+  // Reset internal state when data changes
+  useEffect(() => {
+    setCurrentPage(1);
+    setSortConfig(null);
+    setFilters({});
+  }, [data]);
 
   // Função para ordenar dados
   const sortedData = useMemo(() => {
