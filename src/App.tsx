@@ -53,8 +53,8 @@ function App() {
     setCurrentDashboard(null)
 
     try {
-      // Step 1: Convert NL to SQL
-      const nlResponse = await fetch('http://localhost:8001/translate/', {
+      // Single call to Orchestrator API which handles: NL->SQL, Execute, Dashboard Suggestion
+      const orchestratorResponse = await fetch('http://localhost:8000/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,55 +67,33 @@ function App() {
         })
       })
 
-      if (!nlResponse.ok) {
-        throw new Error('Failed to translate query')
+      if (!orchestratorResponse.ok) {
+        throw new Error('Failed to process query')
       }
 
-      const nlResult = await nlResponse.json()
-      const sql = nlResult.query
-      console.log('Generated SQL:', sql);
+      const responseJson = await orchestratorResponse.json()
+      console.log('Orchestrator response:', responseJson)
 
-      // Step 2: Execute SQL query
-      const queryResponse = await fetch('http://localhost:8002/execute', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: sql
-        })
-      })
-
-      if (!queryResponse.ok) {
-        throw new Error('Failed to execute query')
+      if (!responseJson.success) {
+        throw new Error(responseJson.error || 'Processing failed')
       }
 
-      const queryResult: QueryResult = await queryResponse.json()
-      console.log('Query result:', queryResult);
-
-      if (!queryResult.success) {
-        throw new Error(queryResult.error || 'Query execution failed')
+      const queryResult: QueryResult = {
+        success: true,
+        data: responseJson.data,
+        error: undefined,
+        metadata: responseJson.metadata || {
+          row_count: responseJson.data?.length || 0,
+          columns: Array.isArray(responseJson.data) && responseJson.data.length > 0 ? Object.keys(responseJson.data[0]) : [],
+          execution_time_ms: 0
+        }
       }
 
-      // Step 3: Generate dashboard suggestions
-      const dashboardResponse = await fetch('http://localhost:8003/suggest', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data: queryResult.data,
-          question: question
-        })
-      })
+      const dashboard: DashboardSuggestion | null = responseJson.dashboard || null
 
-      if (!dashboardResponse.ok) {
-        throw new Error('Failed to generate dashboard')
+      if (!dashboard) {
+        throw new Error('Dashboard suggestion missing')
       }
-
-      const dashboardResult = await dashboardResponse.json()
-      const dashboard = dashboardResult.suggestions[0] // Get the best suggestion
-      console.log('Dashboard suggestion:', dashboard);
 
       // Update state
       setCurrentResult(queryResult)
@@ -125,7 +103,7 @@ function App() {
       const historyItem: QueryHistory = {
         id: Date.now().toString(),
         question: question,
-        sql: sql,
+        sql: responseJson.sql || '',
         result: queryResult,
         dashboard: dashboard,
         timestamp: new Date()

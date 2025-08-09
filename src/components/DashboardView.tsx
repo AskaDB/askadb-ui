@@ -54,6 +54,10 @@ const DashboardView: React.FC<DashboardViewProps> = ({ result, dashboard, questi
     );
   }
 
+  const meta = dashboard?.config?.meta || {};
+  const cards: Array<{ type?: string; title?: string; value?: string }> = meta?.cards || [];
+  const narrative: string | undefined = meta?.narrative;
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="mb-6">
@@ -78,6 +82,22 @@ const DashboardView: React.FC<DashboardViewProps> = ({ result, dashboard, questi
             <div className="text-sm text-purple-700">Tempo de execução</div>
           </div>
         </div>
+
+        {cards.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">📈 Indicadores</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {cards.map((card, idx) => (
+                <div key={idx} className="p-4 rounded-lg border bg-gray-50">
+                  {card.title && (
+                    <div className="text-sm text-gray-600 mb-1">{card.title}</div>
+                  )}
+                  <div className="text-2xl font-bold text-gray-800">{card.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="mb-6">
@@ -98,6 +118,13 @@ const DashboardView: React.FC<DashboardViewProps> = ({ result, dashboard, questi
           data={result.data} 
         />
       </div>
+
+      {narrative && (
+        <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+          <h4 className="font-semibold text-blue-800 mb-2">📝 Interpretação Automática</h4>
+          <p className="text-sm text-blue-700">{narrative}</p>
+        </div>
+      )}
 
       <div className="mb-6">
         {/* Usar o novo DynamicTable */}
