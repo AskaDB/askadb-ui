@@ -1,4 +1,5 @@
 import React from 'react';
+import ChartRenderer from './ChartRenderer';
 
 interface QueryResult {
   success: boolean;
@@ -74,12 +75,8 @@ const DashboardView: React.FC<DashboardViewProps> = ({ result, dashboard, questi
           <strong> Motivo:</strong> {dashboard.reasoning}
         </p>
         
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-gray-700 mb-2">Configuração do Gráfico:</h4>
-          <pre className="text-sm text-gray-600 overflow-x-auto">
-            {JSON.stringify(dashboard.config, null, 2)}
-          </pre>
-        </div>
+        {/* Renderizar o gráfico */}
+        <ChartRenderer config={dashboard.config} title={dashboard.title} />
       </div>
 
       <div className="mb-6">
